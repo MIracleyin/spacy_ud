@@ -1,0 +1,85 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<TEI xmlns="http://www.tei-c.org/ns/1.0" xmlns:txm="http://textometrie.org/1.0">
+  <teiHeader xmlns="http://www.tei-c.org/ns/1.0" xml:lang="fr">
+    <fileDesc>
+      <titleStmt>
+        <title type="main">Exemple</title>
+        <author>Timothée Bernard</author>
+      </titleStmt>
+    </fileDesc>
+  </teiHeader>
+  <text id="exempl">
+    <s n="1">
+      <w id="w_exemple_1" n="1">
+        <txm:form>—</txm:form>
+      </w>
+      <w id="w_exemple_2" n="2">
+        <txm:form>Elle</txm:form>
+      </w>
+      <w id="w_exemple_3" n="3">
+        <txm:form>a</txm:form>
+      </w>
+      <w id="w_exemple_4" n="4">
+        <txm:form>écrit</txm:form>
+      </w>
+      <w id="w_exemple_5" n="5">
+        <txm:form>un</txm:form>
+      </w>
+      <w id="w_exemple_6" n="6">
+        <txm:form>bon</txm:form>
+      </w>
+      <w id="w_exemple_7" n="7">
+        <txm:form>article</txm:form>
+      </w>
+      <w id="w_exemple_8" n="8">
+        <txm:form>,</txm:form>
+      </w>
+      <w id="w_exemple_9" n="9">
+        <txm:form>Sabine</txm:form>
+      </w>
+      <w id="w_exemple_10" n="10">
+        <txm:form>?</txm:form>
+      </w>
+    </s>
+    <s n="2">
+      <w id="w_exemple_11" n="11">
+        <txm:form>—</txm:form>
+      </w>
+      <w id="w_exemple_12" n="12">
+        <txm:form>Il</txm:form>
+      </w>
+      <w id="w_exemple_13" n="13">
+        <txm:form>est</txm:form>
+      </w>
+      <w id="w_exemple_14" n="14">
+        <txm:form>très</txm:form>
+      </w>
+      <w id="w_exemple_15" n="15">
+        <txm:form>bon</txm:form>
+      </w>
+      <w id="w_exemple_16" n="16">
+        <txm:form>.</txm:form>
+      </w>
+    </s>
+    <s n="3">
+      <w id="w_exemple_17" n="17">
+        <txm:form>Je</txm:form>
+      </w>
+      <w id="w_exemple_18" n="18">
+        <txm:form>l'</txm:form>
+      </w>
+      <w id="w_exemple_19" n="19">
+        <txm:form>ai</txm:form>
+      </w>
+      <w id="w_exemple_20" n="20">
+        <txm:form>lu</txm:form>
+      </w>
+      <w id="w_exemple_21" n="21">
+        <txm:form>hier</txm:form>
+      </w>
+      <w id="w_exemple_22" n="22">
+        <txm:form>.</txm:form>
+      </w>
+    </s>
+  </text>
+</TEI>

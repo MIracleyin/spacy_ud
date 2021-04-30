@@ -1,0 +1,26 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<tei:TEI xmlns:tei="http://www.tei-c.org/ns/1.0">
+  <teiHeader>
+  </teiHeader>
+  <text>
+  </text>
+  <standOff>
+    <soHeader>
+    </soHeader>
+    <annotations type="coreference">
+      <annotationGrp type="Unit" subtype="MENTION">
+        <span id="u-MENTION-1" from="text:w_exemple_2" to="text:w_exemple_2" ana="#u-MENTION-1-fs"/>
+        <span id="u-MENTION-2" from="text:w_exemple_5" to="text:w_exemple_7" ana="#u-MENTION-2-fs"/>
+        <span id="u-MENTION-3" from="text:w_exemple_9" to="text:w_exemple_9" ana="#u-MENTION-3-fs"/>
+        <span id="u-MENTION-4" from="text:w_exemple_12" to="text:w_exemple_12" ana="#u-MENTION-4-fs"/>
+        <span id="u-MENTION-5" from="text:w_exemple_17" to="text:w_exemple_17" ana="#u-MENTION-5-fs"/>
+        <span id="u-MENTION-6" from="text:w_exemple_18" to="text:w_exemple_18" ana="#u-MENTION-6-fs"/>
+      </annotationGrp>
+      <annotationGrp type="Schema" subtype="CHAINE">
+        <link id="s-CHAINE-1" target="#u-MENTION-1 #u-MENTION-3" ana="#s-CHAINE-1-fs"/>
+        <link id="s-CHAINE-2" target="#u-MENTION-2 #u-MENTION-4 #u-MENTION-6" ana="#s-CHAINE-2-fs"/>
+        <link id="s-CHAINE-3" target="#u-MENTION-5" ana="#s-CHAINE-3-fs"/>
+      </annotationGrp>
+    </annotations>
+  </standOff>
+</tei:TEI>

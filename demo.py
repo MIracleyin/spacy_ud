@@ -3,7 +3,7 @@
 # !@Time    : 2021/4/30 10:22
 # !@Author  : miracleyin @email: miracleyin@live.com
 # !@file: demo.py
-#!/usr/bin/env python
+# !/usr/bin/env python
 # -*- coding: utf-8 -*-
 # !@Time    : 2021/4/30 10:19
 # !@Author  : miracleyin @email: miracleyin@live.com
@@ -69,16 +69,16 @@ import os
 # In[26]:
 
 
-zipurl = "https://repository.ortolang.fr/api/content/export?&path=/democrat/5/&filename=democrat&scope=YW5vbnltb3Vz3"
-tmp = urllib.request.urlretrieve(zipurl)
-filename = tmp[0]
-print("filename : ", filename, "\n")
-# 提取数据集 dataset
-with zipfile.ZipFile(filename, 'r') as zip_ref:
-    zip_ref.extractall(".", )
-
-base_name, ext = os.path.splitext(os.path.basename(zipurl))
-list(os.listdir("."))
+# zipurl = "https://repository.ortolang.fr/api/content/export?&path=/democrat/5/&filename=democrat&scope=YW5vbnltb3Vz3"
+# tmp = urllib.request.urlretrieve(zipurl)
+# filename = tmp[0]
+# print("filename : ", filename, "\n")
+## 提取数据集 dataset
+# with zipfile.ZipFile(filename, 'r') as zip_ref:
+#    zip_ref.extractall(".", )
+#
+# base_name, ext = os.path.splitext(os.path.basename(zipurl))
+# list(os.listdir("."))
 
 # In[27]:
 
@@ -433,7 +433,7 @@ def determine_number(mention):
             tokens[mention['from_id']]['form'].lower() not in ["zero", "un"])): return 'PLUR'
     if ((mention['to_id'] >= (mention['from_id'] + 1)) and (
             tokens[mention['from_id']]['form'].lower() == 'de')): return 'SING' if (
-                tokens[mention['from_id'] + 1]['form'] == 'la') else 'PLUR'
+            tokens[mention['from_id'] + 1]['form'] == 'la') else 'PLUR'
     if ('et' in [tokens[i]['form'] for i in range((mention['from_id'] + 1), mention['to_id'])]): return 'PLUR'
     if ((mention['from_id'] == mention['to_id']) and (tokens[mention['from_id']]['pos'] == "PROPN")): return 'SING'
 
@@ -711,4 +711,3 @@ for form, (c, t) in stats.items():
     correct += c
     total += t
 print(f"global performance: {correct}/{total} = {correct / total}")
-
