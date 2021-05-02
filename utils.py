@@ -5,7 +5,7 @@
 # !@File    : utils.py
 
 # 阴阳性可能的值  'FEM', 'MASC', 'UNK'.
-
+# 辅助功能均是在该进mention，这里会大量使用到tokens的内容，使用from_id构建起来
 relative_pronouns = ["qui", "que", "qu'", "quoi", "où", "dont", "lequel", "laquelle", "lesquels", "lesquelles"]
 reflexive_pronouns = ["me", "m'", "moi", "te", "t'", "toi", "se", "s'", "lui", "elle", "soi", "nous", "vous", "eux",
                       "elles"]  # Remarque : les pronoms réflexifs ne sont pas annotés comme entités dans le corpus (à vérifier). Autre remarque : la forme ne suffit pas toujours à déterminer qu'un token est un pronom réflexif.
@@ -155,34 +155,112 @@ def should_be_resolved(mention, tokens):
     return False  # Nothing else will be resolved.
 
 
-def compute_salience_factors(mention, tokens):
-    values = {}
+def compute_salience_factors(mention, tokens, sentence, anaphora_id=0):
+    """
+    处理一句话
+    :
+    :param mention:
+    :param tokens:
+    :return:
+    """
+    values = {'sentence_recency': 0,
+              'suject_emphasis': 0,
+              'existential_emphasis': 0,
+              'accusative_emphasis': 0,
+              'indirect_object_emphasis': 0,
+              'non_adverbial_emphasis': 0,
+              'head_noun_emphasis': 0,
+              'parallel': 0,
+              'cataphora': 0
+              }
+    indef = ['un', 'une', 'des']
+    partitive = ['du', 'de la', 'de l', 'des']
+    # if mention['from_id'] == mention['to_id']:
+    # Sentence recency = 100 pts
+    values['sentence_recency'] += 100
+    #####################################
+    # 判断mention的各种熟悉即可
+    # 主语 Subject emphasis = 80 pts
+    if tokens[mention['from_id'] - 1]['dep_label'] == 'nsubj':
+        values['suject_emphasis'] += 80
 
-    # Sentence recency
-    values['sentence_recency'] = 100
-    # Subject emphasis 强调/重点
-    token = tokens[mention['from_id']]
-    if token['dep_label'] in ["nsubj", "nsubj:pass", "expl:subj"]:
-        values['subject_emphasis'] = 80
-    # Existential emphasis
-    if mention['number'] == "SING":
-        if mention != "UNK":
-            values["existential_emphasis"] = 70
-    elif mention['number'] == "PLUR":
-        values["existential_emphasis"] = 70
-    # Accusative宾格的 (direct object) emphasis
-    if token['dep_label'] == "dobj":
-        values["direct_object"] = 50
-    # Indirect object and oblique complement emphasis
-    if token['dep_label'] in ["iobj"]:
-        values["indirect_object_and_oblique_complement"] = 40
-    # Non-adverbial emphasis 非副词
-    if token['dep_label'] not in ["advcl", "advmod"]:
-        values["non-adverbial_emphasis"] = 50
-    # Head noun emphasis
-    #head_id = token['head_id']
-    ##if head_id not in tokens[mention[head_id]]:
-    #if token[mention[str(head_id)]]['pos'] != "noun":
-    #    values["head_noun_emphasis"] = 80
+    # 存在词 Existential emphasis 70 pts
+    if tokens[mention['from_id'] - 1]['form'] in indef or tokens[mention['from_id'] - 1]['form'] in partitive:
+        values['existential_emphasis'] += 70
 
+    # 直接宾语Accusative (direct object) emphasis = 50 pts
+    if tokens[mention['from_id'] - 1]['dep_label'] == 'obj':
+        values['accusative_emphasis'] += 50
+
+    # 间接宾语 Indirect object and oblique complement emphasis = 40 pts
+    if tokens[mention['from_id'] - 1]['dep_label'] == 'iobj' or tokens[mention['from_id'] - 1]['dep_label'] == 'obl:arg':
+        values['indirect_object_emphasis'] += 40
+
+    # 头部名词 Head noun emphasis = 80 pts
+    if tokens[mention['from_id'] - 1]['dep_label'] != 'nmod':
+        values['head_noun_emphasis'] += 80
+    ####################################
+    # 需要结合根据句子的属性来判断
+    # Parallelism
+    # values['parallel'] += 35
+    for token in sentence['tokens']:
+        if token['form'] in [".", "?"]:
+            sym_pos = token['id']
+    pre_sentence_mention = []
+    post_sentence_mention = []
+    for mention in sentence['mentions']:
+        # 如果mention的尾端小于逗号，那么在前半部分，反之在后半部分
+        if mention['to_id'] < sym_pos:
+            pre_sentence_mention.append(mention)
+        if mention['from_id'] > sym_pos:
+            post_sentence_mention.append(mention)
+    for mention in pre_sentence_mention:
+        # 发现是副词就break 否则计算
+        # 如何mention长度不为1 那么是否要遍历 from_id to_id
+        if tokens[mention['from_id'] - 1]['dep_label'] in ["advcl", "advmod"]: # 具体调整一下就好
+            break
+        elif tokens[mention['from_id'] - 1]['dep_label']  in ["nsubj", "nsubjpass"]:
+            values['parallel'] += 35
+    for mention in post_sentence_mention:
+        if tokens[mention['from_id'] - 1]['dep_label'] in ["advcl", "advmod"]: # 具体调整一下就好
+            break
+        elif tokens[mention['from_id'] - 1]['dep_label']  in ["nsubj", "nsubjpass"]:
+            values['parallel'] += 35
+    # 非副词 Non-adverbial emphasis = 50 pts
+    # values['non_adverbial_emphasis'] += 50
+    # 就是一个句子里, 把 被逗号隔开的副词短语部分的词排除 剩下的词每个➕50分,
+    # 例如 in the car of Sabine, I found my money .
+    # 这个句子里in the car of Sabine被逗号隔开 且它是副词短语 了,
+    # 然后这段里的名词/代词在 判断非副词时 要被舍弃;
+    # 而其他的所有名词/代词(如这句子里的[I], [money] )每个+50分
+    for token in sentence['tokens']:
+        if token['form'] == ",":
+            dot_pos = token['id']
+    pre_mention = []
+    post_mention = []
+    for mention in sentence['mentions']:
+        # 如果mention的尾端小于逗号，那么在前半部分，反之在后半部分
+        if mention['to_id'] < dot_pos:
+            pre_mention.append(mention)
+        if mention['from_id'] > dot_pos:
+            post_mention.append(mention)
+    for mention in pre_mention:
+        # 发现是副词就break 否则计算
+        # 如何mention长度不为1 那么是否要遍历 from_id to_id
+        if tokens[mention['from_id'] - 1]['dep_label'] in ["advcl", "advmod"]: # 具体调整一下就好
+            break
+        elif tokens[mention['from_id'] - 1]['dep_label']  in ["nsubj", "nsubjpass"]:
+            values['non_adverbial_emphasis'] += 50
+    for mention in post_mention:
+        if tokens[mention['from_id'] - 1]['dep_label'] in ["advcl", "advmod"]: # 具体调整一下就好
+            break
+        elif tokens[mention['from_id'] - 1]['dep_label']  in ["nsubj", "nsubjpass"]:
+            values['non_adverbial_emphasis'] += 50
+
+    ####################################
+    # Cataphora
+    if mention['from_id'] > anaphora_id:
+        values['cataphora'] -= 175
+
+    # print(f"{mention['text']}, with id {mention['from_id']}  = {values}")
     return values
